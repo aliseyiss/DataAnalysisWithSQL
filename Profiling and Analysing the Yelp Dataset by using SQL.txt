@@ -1,6 +1,6 @@
 Profiling and Analysing the Yelp Dataset by using SQL
 
-This project consist of 2 part. In the first part, there  is a series of questions that will help profiling and understanding the data. 
+This project consist of 2 parts. In the first part, there  is a series of questions that will help profiling and understanding the data. 
 
 In the second part, I come up with my own inferences and analysis of the data for a particular research question. First is the dataset for analysis prepared and then related research questions answered.
 
