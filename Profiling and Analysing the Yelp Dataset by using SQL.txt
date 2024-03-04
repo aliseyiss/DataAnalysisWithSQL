@@ -1,0 +1,450 @@
+Profiling and Analysing the Yelp Dataset by using SQL
+
+This project consist of 2 part. In the first part, there  is a series of questions that will help profiling and understanding the data. 
+
+In the second part, I come up with my own inferences and analysis of the data for a particular research question. First is the dataset for analysis prepared and then related research questions answered.
+
+The Yelp datasets are publicly available and can be accessed on the official Yelp website.
+
+Part 1: Yelp Dataset Profiling and Understanding
+
+1. Profiling the data by finding the total number of records for each of the tables below:
+	
+	SELECT COUNT(*)
+		FROM table
+
+i. Attribute table =	10000
+ii. Business table =	10000
+iii. Category table =	10000
+iv. Checkin table =	10000
+v. elite_years table =	10000
+vi. friend table = 	10000
+vii. hours table =	10000
+viii. photo table = 	10000
+ix. review table = 	10000
+x. tip table = 		10000
+xi. user table =	10000
+	
+
+
+2. Finding the total distinct records by either the foreign key or primary key for each table.
+
+	SELECT COUNT(DISTINCT(key))
+	FROM table
+
+i. Business =			10000
+ii. Hours =			1562
+iii. Category =			2643
+iv. Attribute =			1115
+v. Review = FK_business_id 	8090
+vi. Checkin = 			493
+vii. Photo =			6493
+viii. Tip = FK_user_id		537	
+ix. User = 			10000
+x. Friend = 			11
+xi. Elite_years =		2780
+
+
+
+
+3. Are there any columns with null values in the Users table? Indicated "yes," or "no."
+
+	Answer: no
+	
+	
+	SQL code used to arrive at answer:
+	
+	Select *      
+	From user
+	where NULL
+	--or
+	Select column_name      
+	From user
+	where column_name is NULL
+	
+
+	
+4. For each table and column listed below, displaying the smallest (minimum), largest (maximum), and average (mean) value for the following fields:
+
+	SELECT AVG(column)
+		FROM table
+
+	i. Table: Review, Column: Stars
+	
+		min:1		max:5		avg:3.7082
+		
+	
+	ii. Table: Business, Column: Stars
+	
+		min:1		max:5		avg:3.6549
+		
+	
+	iii. Table: Tip, Column: Likes
+	
+		min:0		max:2		avg:0.0144
+		
+	
+	iv. Table: Checkin, Column: Count
+	
+		min:1		max:53		avg:1.9414
+		
+	
+	v. Table: User, Column: Review_count
+	
+		min:0		max:2000	avg:24.2995
+		
+
+
+5. Listing the cities with the most reviews in descending order:
+
+	SQL code used to arrive at answer:
+
+	Select  city
+		,SUM(review_count)
+	From 	business 
+	Group By city
+	Order By SUM(review_count) desc	
+	
+	Copied and Pasted the Result Below:
++-----------------+-------------------+
+| city            | SUM(review_count) |
++-----------------+-------------------+
+| Las Vegas       |             82854 |
+| Phoenix         |             34503 |
+| Toronto         |             24113 |
+| Scottsdale      |             20614 |
+| Charlotte       |             12523 |
+| Henderson       |             10871 |
+| Tempe           |             10504 |
+| Pittsburgh      |              9798 |
+| Montréal        |              9448 |
+| Chandler        |              8112 |
+| Mesa            |              6875 |
+| Gilbert         |              6380 |
+| Cleveland       |              5593 |
+| Madison         |              5265 |
+| Glendale        |              4406 |
+| Mississauga     |              3814 |
+| Edinburgh       |              2792 |
+| Peoria          |              2624 |
+| North Las Vegas |              2438 |
+| Markham         |              2352 |
+| Champaign       |              2029 |
+| Stuttgart       |              1849 |
+| Surprise        |              1520 |
+| Lakewood        |              1465 |
+| Goodyear        |              1155 |
++-----------------+-------------------+
+(Output limit exceeded, 25 of 362 total rows shown)
+
+	
+6. Finding the distribution of star ratings to the business in the following cities:
+
+i. Avon
+
+SQL code used to arrive at answer:
+
+	Select  stars as star_rating
+        		,Count(*) as count
+	From    business
+	Where   city = 'Avon'
+	Group By stars
+
+Copied and Pasted the Result Below: (2 columns – star rating and count):
+
++-------------+-------+
+| star_rating | count |
++-------------+-------+
+|         1.5 |     1 |
+|         2.5 |     2 |
+|         3.5 |     3 |
+|         4.0 |     2 |
+|         4.5 |     1 |
+|         5.0 |     1 |
++-------------+-------+
+
+ii. Beachwood
+
+SQL code used to arrive at answer:
+
+	Select  stars as star_rating
+        		,Count(*) as count
+	From    business
+	Where   city = 'Beachwood'
+	Group By stars
+
+Copied and Pasted the Result Below: (2 columns – star rating and count):
++-------------+-------+
+| star_rating | count |
++-------------+-------+
+|         2.0 |     1 |
+|         2.5 |     1 |
+|         3.0 |     2 |
+|         3.5 |     2 |
+|         4.0 |     1 |
+|         4.5 |     2 |
+|         5.0 |     5 |
++-------------+-------+		
+
+
+7. Finding the top 3 users based on their total number of reviews:
+		
+	SQL code used to arrive at answer:
+
+	Select  name
+        		,review_count
+	From    user
+	Group By    review_count
+	Order By    review_count desc
+	Limit       3	
+		
+Copied and Pasted the Result Below:
++--------+--------------+
+| name   | review_count |
++--------+--------------+
+| Gerald |         2000 |
+| Sara   |         1629 |
+| Yuri   |         1339 |
++--------+--------------+		
+
+
+8. Does posing more reviews correlate with more fans?
+
+--That's my result pane
++-------------+-------------------+--------------------+
+| count(fans) | dist_review_count |  av_number_of_fans |
++-------------+-------------------+--------------------+
+|        9762 | a.0-200           | 0.6717885679164106 |
+|         162 | a.200-400         | 20.746913580246915 |
+|          41 | a.400-600         | 31.975609756097562 |
+|           1 | a.1600-1800       |               50.0 |
+|          17 | a.600-800         |  72.82352941176471 |
+|           3 | a.1200-1400       |              101.0 |
+|          10 | a.800-1000        |              139.1 |
+|           3 | a.1000-1200       | 143.66666666666666 |
+|           1 | a.1800-2000       |              253.0 |
++-------------+-------------------+--------------------+
+
+Explaination of my findings and interpretation of the results:
+
+According to the order of av_number_of_fans and dist_review_count it can be said that there is a general correlation between more reviews and more fans. 
+
+
+Code to reach the conclusion:
+
+	Select 
+        		count(fans),
+        		--Grouping and binning review_count into 10 parts
+        		Case    WHEN review_count >=0 AND review_count<200 Then 'a.0-200'
+                		WHEN review_count >=200 AND review_count<400 Then 'a.200-400'
+                		WHEN review_count >=400 AND review_count<600 Then 'a.400-600'
+                		WHEN review_count >=600 AND review_count<800 Then 'a.600-800'
+                		WHEN review_count >=800 AND review_count<1000 Then 'a.800-1000'
+                		WHEN review_count >=1000 AND review_count<1200 Then 'a.1000-1200'
+                		WHEN review_count >=1200 AND review_count<1400 Then 'a.1200-1400'
+                		WHEN review_count >=1400 AND review_count<1600 Then 'a.1400-1600'
+                		WHEN review_count >=1600 AND review_count<1800 Then 'a.1600-1800'
+                		WHEN review_count >=1800 AND review_count<=2000 Then 'a.1800-2000'
+        		Else 'a.2000+'
+        		End As 'dist_review_count',
+        		--Calculating the average of fans
+        		Avg(fans) As 'av_number_of_fans'
+	From user
+	Group By dist_review_count
+	Order By av_number_of_fans asc 
+	
+9. Are there more reviews with the word "love" or with the word "hate" in them?
+
+	Answer:
+		There are more reviews with the word "love" than with the word "hate".
++-------+--------------+
+| stars | love_in_text |
++-------+--------------+
+|     1 |           85 |
+|     2 |           65 |
+|     3 |          159 |
+|     4 |          489 |
+|     5 |          982 |
++-------+--------------+
++-------+--------------+
+| stars | hate_in_text |
++-------+--------------+
+|     1 |           52 |
+|     2 |           27 |
+|     3 |           40 |
+|     4 |           49 |
+|     5 |           64 |
++-------+--------------+
+	
+	Code used to arrive at answer:
+
+	--Number of texts with the word "love".
+	Select   stars
+          	,Count(text) As 'love_in_text'
+	From      review
+	Where text like '%love%'
+	Group By  stars
+
+	--Number of texts with the word "hate".
+	Select  stars
+        ,(text) As 'hate_in_text'
+	From    review
+	Where text like '%hate%'
+	Group By stars
+	
+	
+10. Find the top 10 users with the most fans:
+
+	Code used to arrive at answer:
+
+	Select  name, fans
+	From    user
+	Order By fans desc
+	Limit   10;
+	
+	Copied and pasted the Result Below:
+
++-----------+------+
+| name      | fans |
++-----------+------+
+| Amy       |  503 |
+| Mimi      |  497 |
+| Harald    |  311 |
+| Gerald    |  253 |
+| Christine |  173 |
+| Lisa      |  159 |
+| Cat       |  133 |
+| William   |  126 |
+| Fran      |  124 |
+| Lissa     |  120 |
++-----------+------+	
+		
+
+
+Part 2: Inferences and Analysis
+
+1. Picking one city and category of my choice and group the businesses in that city or category by their overall star rating. Comparing the businesses with 2-3 stars to the businesses with 4-5 stars and answering the following questions.
+	
+i. Do the two groups my chose to analyse have a different distribution of hours?
+
+Restaurants in Clevaland, which have rank of stars between 4-5, are open between 6:00-14:30. However other Restaurants, which have the rank stars between 3-4, are mostly open between 10:30- 23:00.
+
+ii. Do the two groups you chose to analyse have a different number of reviews?
+
+Restaurants, which have rank of stars between 4-5, have (361)approximately 6 times more review than other restaurants with between 3-4 stars. But the groups of restaurants with 4.5 stars are same cause of grouping by days of the week and open hours. This applies for the the groups of restaurants with 3.5 stars, too.
+         
+         
+iii. Can be inferred anything from the location data provided between these two groups? With explaination.
+
+All the restaurants are in the same neighbourhood. Therefore nothing can be inferred from location records.
+
+SQL code used for analysis:
+
+	Select  city
+        		,category
+        		,review_count
+        		,stars
+        		,neighborhood
+        		,is_open
+        		,hours
+	From    business b INNER JOIN category c
+                    	ON b.id = c.business_id
+                    	INNER JOIN hours h 
+                    	ON b.id = h.business_id
+	Where   city = 'Cleveland' and category = 'Restaurants'
+	Order By stars desc
+
+
+Results:
+
++-----------+-------------+--------------+-------+-------------------+---------+----------------------+
+| city      | category    | review_count | stars | neighborhood      | is_open | hours                |
++-----------+-------------+--------------+-------+-------------------+---------+----------------------+
+| Cleveland | Restaurants |          361 |   4.5 | Goodrich Kirtland |       1 | Monday|6:00-14:30    |
+| Cleveland | Restaurants |          361 |   4.5 | Goodrich Kirtland |       1 | Tuesday|6:00-14:30   |
+| Cleveland | Restaurants |          361 |   4.5 | Goodrich Kirtland |       1 | Friday|6:00-14:30    |
+| Cleveland | Restaurants |          361 |   4.5 | Goodrich Kirtland |       1 | Wednesday|6:00-14:30 |
+| Cleveland | Restaurants |          361 |   4.5 | Goodrich Kirtland |       1 | Thursday|6:00-14:30  |
+| Cleveland | Restaurants |          361 |   4.5 | Goodrich Kirtland |       1 | Saturday|9:00-13:00  |
+| Cleveland | Restaurants |           62 |   3.5 | Goodrich Kirtland |       0 | Monday|10:30-23:00   |
+| Cleveland | Restaurants |           62 |   3.5 | Goodrich Kirtland |       0 | Tuesday|10:30-23:00  |
+| Cleveland | Restaurants |           62 |   3.5 | Goodrich Kirtland |       0 | Friday|10:30-0:00    |
+| Cleveland | Restaurants |           62 |   3.5 | Goodrich Kirtland |       0 | Thursday|10:30-23:00 |
+| Cleveland | Restaurants |           62 |   3.5 | Goodrich Kirtland |       0 | Sunday|11:00-23:00   |
+| Cleveland | Restaurants |           62 |   3.5 | Goodrich Kirtland |       0 | Saturday|10:30-0:00  |
++-----------+-------------+--------------+-------+-------------------+---------+----------------------+
+
+		
+		
+2. Group business based on the ones that are open and the ones that are closed. What differences can be found between the ones that are still open and the ones that are closed? List at least two differences and the SQL code you used to arrive at your answer.
+		
+i. Difference 1:
+         The number of open restaurants(8480) is nearly 5 times more than the closed ones(1520).
+
++---------+-------------+--------------------+
+| is_open | Count(name) |  Avg(review_count) |
++---------+-------------+--------------------+
+|       0 |        1520 | 23.198026315789473 |
+|       1 |        8480 | 31.757075471698112 |
++---------+-------------+--------------------+
+         
+ii. Difference 2:
+         Average of number of the review count of open restaurants with 31.75 is clearly higher than the closed ones with 23.19.
+
++---------+-------------+--------------------+
+| is_open | Count(name) |  Avg(review_count) |
++---------+-------------+--------------------+
+|       0 |        1520 | 23.198026315789473 |
+|       1 |        8480 | 31.757075471698112 |
++---------+-------------+--------------------+         
+         
+SQL code used for analysis:
+
+	Select  is_open
+        		,Count(name)
+        		,Avg(review_count)
+	From    business
+	Group By is_open
+
+	
+	
+3. For this last part of the analysis, I am going to choose the type of analysis I want to conduct on the Yelp dataset and am going to prepare the data for analysis.
+
+Ideas for analysis include: Parsing out keywords and business attributes for sentiment analysis, clustering businesses to find commonalities or anomalies between them, predicting the overall star rating for a business, predicting the number of fans a user will have, and so on. These are just a few examples to get you started, so feel free to be creative and come up with your own problem you want to solve. Provide answers, in-line, to all of the following:
+	
+i. Indicating the type of analysis chosen to do:
+
+         Relation between positive sentimentals and the average rate of star
+         
+ii. Writing 1-2 brief paragraphs on the type of data I will need for your analysis and why I chose that data:
+
+          Texts or comments should be analysed to find out the reasons behind the reactions of customers or users, especially to display the criteria of users. In this way the rate of stars of business can be optimised. In my analysis i focused on the some positive sentimentals to increase granularity.                      
+                  
+iii. Output of dataset:
+
++--------------------+---------------------+
+|       AVG(b.stars) | sentimental_in_text |
++--------------------+---------------------+
+| 3.5681818181818183 | cool                |
+| 3.9285714285714284 | cute                |
+|                3.9 | delicious           |
+|                4.0 | fancy               |
+| 3.6636363636363636 | like                |
+|  3.909448818897638 | love                |
+| 3.6822289156626504 | others              |
++--------------------+---------------------+         
+         
+iv. Providing the SQL code used to create your final dataset:
+
+Select   AVG(b.stars)
+          ,CASE When r.text like '%love%' Then 'love'
+                When r.text like '%cool%' Then 'cool'
+                When r.text like '%cute%' Then 'cute'
+                when r.text like '%like%' Then 'like'
+                When r.text like '%delicious%' Then 'delicious'
+                When r.text like '%fancy%' Then 'fancy'
+                Else 'others'
+            End As 'sentimental_in_text'
+From      review r INNER JOIN business b  
+                    ON r.business_id = b.id 
+Group By  sentimental_in_text
