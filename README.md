@@ -1,7 +1,5 @@
 # Data Analysis With SQL
 Profiling and Analysing the Yelp Dataset by using SQL
-
-# About The Analysis
 The analysis objectives are fully detailed in the analysis documents.
 
 # Situation:
